@@ -1,45 +1,541 @@
-CREATE TABLE "Buyer" (
-    "ID"           INTEGER  NOT NULL UNIQUE,
-    "FIO"          TEXT     NOT NULL,
-    "PhoneNumber"  INTEGER  NOT NULL,
-    PRIMARY KEY("ID" AUTOINCREMENT),
-    CONSTRAINT PhoneNumber_range
-    CHECK("PhoneNumber" > 0)
+CREATE TABLE "buyer" (
+    "id"      INTEGER   NOT NULL UNIQUE,
+    "name"    TEXT      NOT NULL,
+    "phone"   INTEGER   NOT NULL,
+    PRIMARY KEY("id" AUTOINCREMENT),
+    CONSTRAINT phone_range
+    CHECK("phone" > 0)
 );
 
-CREATE TABLE "Shop" (
-    "ID"        INTEGER  NOT NULL UNIQUE,
-    "Location"  TEXT     NOT NULL,
-    PRIMARY KEY("ID" AUTOINCREMENT)
+CREATE TABLE "store" (
+    "id"       INTEGER   NOT NULL UNIQUE,
+    "city"     TEXT      NOT NULL,
+    "adress"   TEXT      NOT NULL,
+    PRIMARY KEY("id" AUTOINCREMENT)
 );
 
-CREATE TABLE "Orderr" (
-    "ID"         INTEGER  NOT NULL UNIQUE,
-    "Quantity"   INTEGER  NOT NULL,
-    "BuyerID"    INTEGER  NOT NULL,
-    "Date"       TEXT     NOT NULL,
-    "Status"     TEXT     NOT NULL,
-    PRIMARY KEY("ID" AUTOINCREMENT),
-    FOREIGN KEY("BuyerID")   REFERENCES "Buyer"("ID")
+CREATE TABLE "category" (
+    "id"     INTEGER   NOT NULL UNIQUE,
+    "name"   TEXT      NOT NULL,
+    PRIMARY KEY("id" AUTOINCREMENT)
 );
 
-CREATE TABLE "Product" (
-    "ID"             INTEGER  NOT NULL UNIQUE,
-    "ShopID"         INTEGER  NOT NULL,
-    "UnitOfMessure"  TEXT     NOT NULL,
-    "Price"          REAL     NOT NULL,
-    "Quantity"       INTEGER  NOT NULL,
-    "Availability"   BLOB     NOT NULL,
-    "Date"           TEXT     NOT NULL,
-    "Name"           TEXT     NOT NULL,
-    PRIMARY KEY("ID" AUTOINCREMENT),
-    FOREIGN KEY("ShopID") REFERENCES "Shop"("ID")
+CREATE TABLE "producer" (
+    "id"     INTEGER   NOT NULL UNIQUE,
+    "name"   TEXT      NOT NULL,
+    PRIMARY KEY("id" AUTOINCREMENT)
 );
 
-CREATE TABLE "OrderProduct" (
-    "OrderID"    INTEGER  NOT NULL,
-    "ProductID"  INTEGER  NOT NULL,
-    PRIMARY KEY("ProductID","OrderID"),
-    FOREIGN KEY("ProductID") REFERENCES "Product"("ID"),
-    FOREIGN KEY("OrderID") REFERENCES "Orderr"("ID")
+CREATE TABLE "order" (
+    "id"         INTEGER   NOT NULL UNIQUE,
+    "date"       TEXT      NOT NULL,
+    "status"     TEXT      NOT NULL,
+    "buyer_id"   INTEGER   NOT NULL,
+    PRIMARY KEY("id" AUTOINCREMENT),
+    FOREIGN KEY("buyer_id") REFERENCES "buyer"("id")
 );
+
+CREATE TABLE "product" (
+    "id"             INTEGER   NOT NULL UNIQUE,
+    "name"           TEXT      NOT NULL,
+    "price"          REAL      NOT NULL,
+    "quantity"       INTEGER   NOT NULL,
+    "availability"   BLOB      NOT NULL,
+    "date"           TEXT      NOT NULL,
+    "producer_id"    INTEGER   NOT NULL,
+    "category_id"    INTEGER   NOT NULL,
+    "store_id"       INTEGER   NOT NULL,
+    PRIMARY KEY("id" AUTOINCREMENT),
+    FOREIGN KEY("producer_id") REFERENCES "producer"("id"),
+    FOREIGN KEY("category_id") REFERENCES "category"("id"),
+    FOREIGN KEY("store_id")    REFERENCES "store"("id")
+);
+
+CREATE TABLE "order_product" (
+    "order_id"     INTEGER   NOT NULL,
+    "product_id"   INTEGER   NOT NULL,
+    "quantity"     INTEGER   NOT NULL,
+    PRIMARY KEY("product_id","order_id"),
+    FOREIGN KEY("product_id") REFERENCES "product"("id"),
+    FOREIGN KEY("order_id")   REFERENCES "order"("id")
+);
+
+
+=================================================================================================
+
+
+INSERT INTO [buyer] (name, phone) VALUES 
+('Мельник Богдан Радикович',89991889367),
+('Гарифуллина Валерия Руслановна',89122526640),
+('Максудов Эмиль Альбертович',89033403046),
+('Яруллин Рашид Саматович',88888888888),
+('Зубенко Михаил Петрович ',88005553535);
+
+INSERT INTO [store] (city, adress) VALUES
+('Казань','ул. Пушкина, д. Колотушкина'),
+('Казань','ул. Кремлевская, д. 35'),
+('Казань','ул. Ленина, д. 18'),
+('Москва','ул. Мира, д. 5'),
+('Ижевск','ул. Льва Толстого, д. 7а'),
+('Казань','тер. Деревни Универсиады, д. 3/1');
+
+INSERT INTO [category] (name) VALUES
+('Продукты питания'),
+('Бытовая химия'),
+('Канцелярские товары'),
+('Декор и интерьер'),
+('Одежда и обувь'),
+('Электроника'),
+('Красота и уход'),
+('Иные товары');
+
+INSERT INTO [producer] (name) VALUES
+('CocaCola'),
+('Pepsi'),
+('Черноголовка'),
+('Добрый'),
+('Milka'),
+('Alpen Gold'),
+('Бабаевский'),
+('Barilla'),
+('Chertilla Italiano'),
+('Мистраль'),
+('IKEA'),
+('Пинскдрев'),
+('Erich Krause'),
+('STABILO'),
+('Mr. Proper'),
+('Lenor'),
+('Abibas'),
+('Superme'),
+('GUCCI'),
+('Louis Vuitton'),
+('H&M'),
+('Ивановсая текстильная мануфактура'),
+('Ижевский трикотаж'),
+('Lenovo'),
+('Apple'),
+('Samsung'),
+('HP'),
+('Xiaomi'),
+('Nokia'),
+('Oriflame'),
+('Le Petit Marseillais'),
+('Head & Shoulders'),
+('Жумайсынба'),
+('Old Spice'),
+('Zielinski & Rozen'),
+('Yves Saint Laurent'),
+('Периодика'),
+('Lay`s');
+
+INSERT INTO [product] (store_id, producer_id, category_id, price, quantity, availability, date, name) VALUES
+(1,1,1,199,100,true,'29.08.2023','Classic'),
+(1,1,1,199,0,false,'29.08.2023','Vanila'),
+(1,1,1,199,0,false,'29.08.2023','Cherry'),
+(2,1,1,199,50,true,'29.08.2023','Classic'),
+(2,1,1,199,0,false,'29.08.2023','Vanila'),
+(2,1,1,199,0,false,'29.08.2023','Cherry'),
+(2,1,1,199,0,false,'29.08.2023','Zero'),
+(4,1,1,199,0,false,'29.08.2023','Classic'),
+(4,1,1,199,0,false,'29.08.2023','Vanila'),
+(4,1,1,199,0,false,'29.08.2023','Cherry'),
+
+(2,2,1,199,0,false,'29.08.2023','Classic'),
+(2,2,1,199,0,false,'29.08.2023','Mango'),
+(2,2,1,199,0,false,'29.08.2023','Mojito taste'),
+(3,2,1,199,0,false,'29.08.2023','Classic'),
+(3,2,1,199,0,false,'29.08.2023','Mango'),
+(3,2,1,199,0,false,'29.08.2023','Mojito taste'),
+(6,2,1,199,0,false,'29.08.2023','Classic'),
+(6,2,1,199,0,false,'29.08.2023','Mango'),
+(6,2,1,199,0,false,'29.08.2023','Mojito taste'),
+
+(3,3,1,149,50,true,'29.08.2023','Байкал'),
+(3,3,1,149,75,true,'29.08.2023','Дюшес'),
+(3,3,1,149,100,true,'29.08.2023','Тархун'),
+(5,3,1,149,25,true,'29.08.2023','Байкал'),
+(5,3,1,149,125,true,'29.08.2023','Дюшес'),
+(5,3,1,149,325,true,'29.08.2023','Тархун'),
+(4,3,1,149,147,true,'29.08.2023','Байкал'),
+(4,3,1,149,98,true,'29.08.2023','Дюшес'),
+(4,3,1,149,333,true,'29.08.2023','Тархун'),
+
+(1,4,1,159,60,true,'29.08.2023','Кола'),
+(1,4,1,139,35,true,'29.08.2023','Мультифрукт'),
+(1,4,1,139,120,true,'29.08.2023','Ананас'),
+(1,4,1,159,121,true,'29.08.2023','Лимон'),
+(2,4,1,159,28,true,'29.08.2023','Кола'),
+(2,4,1,139,105,true,'29.08.2023','Мультиовощ'),
+(2,4,1,139,232,true,'29.08.2023','Ананас'),
+(2,4,1,159,265,true,'29.08.2023','Лимон'),
+(5,4,1,159,177,true,'29.08.2023','Кола'),
+(5,4,1,139,108,true,'29.08.2023','Мультифрукт'),
+(5,4,1,159,68,true,'29.08.2023','Лимон'),
+(5,4,1,139,184,true,'29.08.2023','Ананас'),
+
+(3,5,1,119,60,true,'29.08.2023','Молочный шоколад'),
+(3,5,1,119,35,true,'29.08.2023','Caramel'),
+(3,5,1,139,120,true,'29.08.2023','Молочный с соленым крекером'),
+(3,5,1,319,120,true,'29.08.2023','Bubbly'),
+(4,5,1,119,28,true,'29.08.2023','Молочный шоколад'),
+(4,5,1,119,105,true,'29.08.2023','Caramel'),
+(4,5,1,139,265,true,'29.08.2023','Молочный с солевым крекером'),
+(4,5,1,319,265,true,'29.08.2023','Bubbly'),
+(6,5,1,119,177,true,'29.08.2023','Молочный шоколад'),
+(6,5,1,119,68,true,'29.08.2023','Caramel'),
+(6,5,1,139,68,true,'29.08.2023','Молочный с соленым крекером'),
+(6,5,1,319,184,true,'29.08.2023','Bubbly'),
+
+(2,6,1,119,60,true,'29.08.2023','Молочный шоколад'),
+(2,6,1,119,35,true,'29.08.2023','Молочный с фундуком и изюмом'),
+(2,6,1,139,120,true,'29.08.2023','Белый шоколад'),
+(2,6,1,329,120,true,'29.08.2023','Max Fun'),
+(4,6,1,119,28,true,'29.08.2023','Молочный шоколад'),
+(4,6,1,119,105,true,'29.08.2023','Молочный с фундуком и изюмом'),
+(4,6,1,139,265,true,'29.08.2023','Белый шоколад'),
+(4,6,1,329,265,true,'29.08.2023','Max Fun'),
+(5,6,1,119,177,true,'29.08.2023','Молочный шоколад'),
+(5,6,1,119,68,true,'29.08.2023','Молочный с фундуком и изюмом'),
+(5,6,1,139,68,true,'29.08.2023','Белый шоколад'),
+(5,6,1,329,184,true,'29.08.2023','Max Fun'),
+
+(3,7,1,159,20,true,'29.08.2023','Элитный, горький'),
+(3,7,1,159,55,true,'29.08.2023','Люкс, темный'),
+(5,7,1,159,35,true,'29.08.2023','Элитный, горький'),
+(5,7,1,159,25,true,'29.08.2023','Люкс, темный'),
+(4,7,1,159,47,true,'29.08.2023','Элитный, горький'),
+(4,7,1,159,98,true,'29.08.2023','Люкс, темный'),
+
+(3,8,1,99,20,true,'29.08.2023','Спагетти'),
+(3,8,1,139,36,true,'29.08.2023','Улитки'),
+(3,8,1,139,113,true,'29.08.2023','Спирали'),
+(6,8,1,99,34,true,'29.08.2023','Спагетти'),
+(6,8,1,139,25,true,'29.08.2023','Улитки'),
+(6,8,1,139,125,true,'29.08.2023','Спирали'),
+(1,8,1,99,147,true,'29.08.2023','Спагетти'),
+(1,8,1,139,83,true,'29.08.2023','Улитки'),
+(1,8,1,139,67,true,'29.08.2023','Спирали'),
+
+(2,10,1,79,20,true,'29.08.2023','Спагетти'),
+(2,10,1,119,36,true,'29.08.2023','Улитки'),
+(2,10,1,119,113,true,'29.08.2023','Спирали'),
+(4,10,1,79,34,true,'29.08.2023','Спагетти'),
+(4,10,1,119,25,true,'29.08.2023','Улитки'),
+(4,10,1,119,125,true,'29.08.2023','Спирали'),
+(1,10,1,79,147,true,'29.08.2023','Спагетти'),
+(1,10,1,119,83,true,'29.08.2023','Улитки'),
+(1,10,1,119,67,true,'29.08.2023','Спирали'),
+
+(4,9,1,199,5,true,'29.08.2023','Маргаритта'),
+(4,9,1,239,6,true,'29.08.2023','Карбонара'),
+(4,9,1,339,7,true,'29.08.2023','Ризотто'),
+
+(6,11,4,1230,0,false,'29.08.2023','Бергсхульт'),
+(6,11,4,2913,0,false,'29.08.2023','Сундвик'),
+(6,11,4,1318,0,false,'29.08.2023','Мосслэнда'),
+(6,11,4,15599,0,false,'29.08.2023','Вестмарка'),
+(6,11,4,23655,0,false,'29.08.2023','Хемнэс'),
+(6,11,4,11167,0,false,'29.08.2023','Экерё'),
+(6,11,4,3263,0,false,'29.08.2023','Вескен'),
+(6,11,4,11334,0,false,'29.08.2023','Асванг'),
+(6,11,4,4695,1,true,'29.08.2023','Каустби'),
+
+(5,12,4,950000,2,true,'29.08.2023','Коллекция "Блэквуд"'),
+(5,12,4,2500000,3,true,'29.08.2023','Коллекция "Верди Люкс"'),
+(5,12,4,2075000,3,true,'29.08.2023','Коллекция "Милана"'),
+(5,12,4,1750000,2,true,'29.08.2023','Коллекция "Юстина"'),
+(5,12,4,990000,2,true,'29.08.2023','Коллекция "Ирвинг"'),
+(5,12,4,1100000,1,true,'29.08.2023','Коллекция "Экерё"'),
+
+(3,13,3,100,1030,true,'29.08.2023','Клей-карандаш'),
+(3,13,3,289,136,true,'29.08.2023','Механический карандаш'),
+(3,13,3,519,1113,true,'29.08.2023','Степлер'),
+(3,13,3,89,3324,true,'29.08.2023','Набор шариковых ручек'),
+(3,13,3,250,625,true,'29.08.2023','Корректирующая лента'),
+(3,13,3,630,1205,true,'29.08.2023','Набор линеров'),
+(3,13,3,195,1477,true,'29.08.2023','Набор гелевых ручек'),
+(3,13,3,250,853,true,'29.08.2023','Блок-кубик'),
+(3,13,3,302,4607,true,'29.08.2023','Цветные карандаши'),
+
+(1,14,3,80,130,true,'29.08.2023','Клей-карандаш'),
+(1,14,3,259,1337,true,'29.08.2023','Механический карандаш'),
+(1,14,3,489,228,true,'29.08.2023','Степлер'),
+(2,14,3,79,2322,true,'29.08.2023','Набор шариковых ручек'),
+(2,14,3,2390,1625,true,'29.08.2023','Корректирующая лента'),
+(1,14,3,615,1488,true,'29.08.2023','Набор линеров'),
+(1,14,3,175,1078,true,'29.08.2023','Набор гелевых ручек'),
+(2,14,3,239,756,true,'29.08.2023','Блок-кубик'),
+(1,14,3,278,1703,true,'29.08.2023','Цветные карандаши'),
+
+(6,15,2,200,430,true,'29.08.2023','Горный ручей'),
+(6,15,2,250,537,true,'29.08.2023','Лаванда'),
+(5,16,2,205,328,true,'29.08.2023','Скандинавская весна'),
+(5,16,2,205,452,true,'29.08.2023','Альпийские луга'),
+(5,16,2,205,432,true,'29.08.2023','Масло Ши'),
+(5,16,2,205,252,true,'29.08.2023','Пробуждение весны'),
+(5,16,2,205,312,true,'29.08.2023','Летний бриз'),
+(5,16,2,205,152,true,'29.08.2023','Золотая орхидея'),
+(5,16,2,205,472,true,'29.08.2023','Морские минералы'),
+
+(1,17,5,11900,30,true,'29.08.2023','Спортивный костюм'),
+(1,17,5,1549,137,true,'29.08.2023','Хлопковая футболка'),
+(1,17,5,2939,128,true,'29.08.2023','Свитшот'),
+(1,18,5,85511,1,true,'29.08.2023','Футболка'),
+(3,19,5,750000,0,false,'29.08.2023','438496/ZHK64/1713'),
+(3,19,5,457000,0,false,'29.08.2023','ITEM35980'),
+(5,20,7,173382,0,false,'29.08.2023','Pochette Accessoires Monogram'),
+(5,20,7,464318,0,false,'29.08.2023','Onthego PM'),
+(5,20,7,454725,0,false,'29.08.2023','Carryall PM'),
+(5,21,5,2138,72,true,'29.08.2023','Верх из смесового модала'),
+(5,21,5,2225,42,true,'29.08.2023','Лонгслив'),
+(5,21,5,2281,47,true,'29.08.2023','Чёрный'),
+(2,22,5,50,50,true,'29.08.2023','Трусишки'),
+(2,22,5,50,50,true,'29.08.2023','Носочки'),
+(2,23,5,50,50,true,'29.08.2023','Трусишки'),
+(2,23,5,50,50,true,'29.08.2023','Носочки'),
+
+-- Lenovo --
+(1,24,6,9990,10,true,'01.08.2023','Tab M8'),
+(1,24,6,22900,5,true,'01.08.2023','ThinkVision TIO 24'),
+(1,24,6,29990,0,false,'01.08.2023','IdeaPad 3'),
+(2,24,6,29990,2,true,'03.08.2023','IdeaPad 3'),
+(2,24,6,8990,20,true,'03.08.2023','Tab M8'),
+(2,24,6,123990,0,false,'03.08.2023','ThinkPad T14s'),
+(3,24,6,12990,8,true,'02.08.2023','Tab M8'),
+(3,24,6,11990,0,false,'02.08.2023','ThinkPad T14s'),
+(4,24,6,10990,4,true,'01.08.2023','Tab M8'),
+(4,24,6,25990,0,false,'01.08.2023','ThinkVision TIO 24'),
+(4,24,6,27999,5,true,'01.08.2023','IdeaPad 3'),
+-- Apple --
+(1,25,6,123990,10,true,'01.08.2023','iPhone 14 Pro Max'),
+(1,25,6,94990,50,true,'01.08.2023','iPhone 14 Pro'),
+(1,25,6,229990,5,true,'01.08.2023','MacBook Air 15'),
+(2,25,6,29990,20,true,'03.08.2023','Watch SE'),
+(2,25,6,13990,25,true,'03.08.2023','AirPods Pro'),
+(2,25,6,39990,10,true,'03.08.2023','iPad 10,2'),
+(3,25,6,12990,8,true,'02.08.2023','AirPods Pro'),
+(3,25,6,111990,0,false,'02.08.2023','iPhone 14 Pro Max'),
+(4,25,6,23990,15,true,'01.08.2023','Watch SE'),
+(6,25,6,25990,5,true,'04.08.2023','iPad 10,2'),
+(6,25,6,25990,15,true,'04.08.2023','Watch SE'),
+(6,25,6,219990,5,true,'04.08.2023','MacBook Air 15'), 
+-- Samsung --
+(1,26,6,12990,5,true,'01.08.2023','Galaxy Tab A7'),
+(1,26,6,14990,3,true,'01.08.2023','Galaxy Tab A8'),
+(1,26,6,22990,0,false,'01.08.2023','Galaxy Watch4 44mm'),
+(2,26,6,11990,20,true,'03.08.2023','Galaxy Tab A7'),
+(2,26,6,46990,21,true,'03.08.2023','Galaxy A73 5G'),
+(2,26,6,47990,10,true,'03.08.2023','Galaxy S21'),
+(3,26,6,47990,6,true,'02.08.2023','Galaxy S21'),
+(3,26,6,48990,0,false,'02.08.2023','Galaxy A73 5G'),
+(4,26,6,15990,12,true,'01.08.2023','Galaxy Tab A8'),
+(6,26,6,10990,5,true,'04.08.2023','Galaxy Tab A7'),
+(6,26,6,15990,11,true,'04.08.2023','Galaxy Tab A8'),
+(6,26,6,18990,0,false,'04.08.2023','Galaxy Watch4 44mm'),
+-- HP --
+(1,27,6,1490,14,true,'01.08.2023','Wireless Mouse Z3700'),
+(1,27,6,196990,5,true,'01.08.2023','ENVY 17t-ch100'),
+(2,27,6,120990,0,false,'01.08.2023','EliteBook 850 G8'),
+(2,27,6,1890,20,true,'03.08.2023','SSD P500'),
+(2,27,6,6190,22,true,'03.08.2023','DeskJet 2320'),
+(3,27,6,2190,1,true,'03.08.2023','SSD P500'),
+(3,27,6,12990,17,true,'02.08.2023','DeskJet 2320'),
+(4,27,6,181990,18,true,'02.08.2023','ENVY 17t-ch100'),
+(5,27,6,1990,20,true,'01.08.2023','SSD P500'),
+(5,27,6,54990,0,false,'04.08.2023','DeskJet 2320'),
+(6,27,6,1990,10,true,'04.08.2023','Wireless Mouse Z3700'),
+(6,27,6,115990,0,false,'04.08.2023','EliteBook 850 G8'),
+-- Xiaomi --
+(1,28,6,45490,5,true,'01.08.2023','11T Pro'),
+(1,28,6,5990,5,true,'01.08.2023','Redmi 9A'),
+(2,28,6,7990,0,false,'01.08.2023','Redmi A2+'),
+(2,28,6,56990,0,false,'03.08.2023','Mi TV A2'),
+(2,28,6,22990,5,true,'03.08.2023','Redmi Curved Display'),
+(3,28,6,9990,1,true,'03.08.2023','Redmi A2+'),
+(4,28,6,44390,17,true,'02.08.2023','11T Pro'),
+(4,28,6,8990,15,true,'02.08.2023','Redmi 9A'),
+(6,28,6,45990,20,true,'01.08.2023','11T Pro'),
+(6,28,6,9990,0,false,'04.08.2023','Redmi 9A'),
+(6,28,6,6980,0,false,'04.08.2023','Redmi A2+'),
+(6,28,6,58990,0,false,'04.08.2023','Mi TV A2'),
+-- Nokia --
+(1,29,6,51910,0,false,'01.08.2023','XR20'),
+(2,29,6,33990,5,true,'01.08.2023','X20'),
+(2,29,6,1990,0,false,'01.08.2023','105DS'),
+(3,29,6,2190,7,true,'03.08.2023','105DS'),
+(3,29,6,2890,12,true,'03.08.2023','105SS'),
+(4,29,6,3190,2,true,'03.08.2023','105SS'),
+(4,29,6,3290,7,true,'02.08.2023','105DS'),
+(5,29,6,53910,10,true,'02.08.2023','XR20'),
+(5,29,6,37000,0,false,'01.08.2023','X20'),
+(5,29,6,2290,0,false,'04.08.2023','105DS'),
+(6,29,6,52910,5,true,'04.08.2023','XR20'),
+(6,29,6,36990,1,true,'04.08.2023','X20'),
+-- Oriflame --
+(1,30,7,579,14,true,'01.08.2023','THE ONE Colour Unlimited'),
+(1,30,7,390,0,false,'01.08.2023','THE ONE Hypnotic Depth'),
+(1,30,7,1209,0,false,'01.08.2023','THE ONE Everlasting'),
+(3,30,7,579,20,true,'03.08.2023','THE ONE Colour Unlimited'),
+(3,30,7,1390,22,true,'03.08.2023','THE ONE Everlasting'),
+(3,30,7,1990,1,true,'03.08.2023','Giordani Gold'),
+(5,30,7,579,17,true,'02.08.2023','THE ONE Colour Unlimited'),
+(5,30,7,1999,18,true,'02.08.2023','Giordani Gold'),
+(6,30,7,589,20,true,'01.08.2023','THE ONE Colour Unlimited'),
+(6,30,7,490,0,false,'04.08.2023','THE ONE Hypnotic Depth'),
+(6,30,7,1290,10,true,'04.08.2023','THE ONE Everlasting'),
+(6,30,7,1590,10,true,'04.08.2023','Everlasting Sync SPF 30'),
+-- Le Petit Marseillais --
+(1,31,7,149,14,true,'01.08.2023','Sensitive 400'),
+(1,31,7,390,5,true,'01.08.2023','Sensitive 650'),
+(1,31,7,439,10,true,'01.08.2023','Rose 400'),
+(2,31,7,189,20,true,'03.08.2023','Rose 400'),
+(2,31,7,619,22,true,'03.08.2023','Rose 650'),
+(3,31,7,219,10,true,'03.08.2023','Sensitive 400'),
+(4,31,7,479,17,true,'02.08.2023','Sensitive 650'),
+(4,31,7,549,18,true,'02.08.2023','Rose 650'),
+(5,31,7,199,20,true,'01.08.2023','Sensitive 400'),
+(5,31,7,549,10,true,'04.08.2023','Sensitive 650'),
+(5,31,7,199,31,true,'04.08.2023','Rose 400'),
+(6,31,7,399,20,true,'04.08.2023','Sensitive 650'),
+-- Head and Shoulders --
+(1,32,7,449,14,true,'01.08.2023','Basic care 400 Normal'),
+(1,32,7,390,5,true,'01.08.2023','Шампунь Максимальный контроль жирности'),
+(1,32,7,439,10,true,'01.08.2023','Энергия океана 400'),
+(2,32,7,689,20,true,'03.08.2023','Шампунь Максимальный контроль жирности'),
+(2,32,7,529,22,true,'03.08.2023','Basic care 400 Normal'),
+(3,32,7,519,10,true,'03.08.2023','Basic care 400 Normal'),
+(4,32,7,549,20,true,'02.08.2023','Basic care 400 Normal'),
+-- Жумайсынба --
+(1,33,7,999,44,true,'01.08.2023','Шампунь'),
+(2,33,7,999,44,true,'01.08.2023','Шампунь'),
+(6,33,7,999,44,true,'01.08.2023','Шампунь'),
+-- Old Spice --
+(1,34,7,390,14,true,'01.08.2023','Captain 250 мл'),
+(1,34,7,379,5,true,'01.08.2023','WhiteWater 250 мл'),
+(2,34,7,359,20,true,'01.08.2023','WhiteWater 250 мл'),
+(2,34,7,330,20,true,'03.08.2023','Captain 250 мл'),
+(3,34,7,619,22,true,'03.08.2023','Deep sea with Minerals'),
+(3,34,7,319,1,true,'03.08.2023','WhiteWater 250 мл'),
+(3,34,7,499,17,true,'02.08.2023','Deep sea with Minerals'),
+(5,34,7,449,18,true,'02.08.2023','WhiteWater 250 мл'),
+(5,34,7,399,20,true,'01.08.2023','WhiteWater 250 мл'),
+(5,34,7,549,20,true,'04.08.2023','Deep sea with Minerals'),
+(6,34,7,390,10,true,'04.08.2023','Captain 250 мл'),
+(6,34,7,350,50,true,'04.08.2023','WhiteWater 250 мл'),
+-- ZIELINSKI ROZEN --
+(1,35,7,2200,14,true,'01.08.2023','concentrated rosemary & lemon, neroli'),
+(1,35,7,7980,5,true,'01.08.2023','concentrated black pepper & amber, neroli'),
+(2,35,7,2200,0,false,'01.08.2023','concentrated rosemary & lemon, neroli'),
+(2,35,7,8890,20,true,'03.08.2023','concentrated black pepper & amber, neroli'),
+(2,35,4,3190,30,true,'03.08.2023','диффузор orange & jasmine, vanilla'),
+(3,35,7,2300,30,true,'03.08.2023','concentrated rosemary & lemon, neroli'),
+(3,35,4,3390,17,true,'02.08.2023','диффузор orange & jasmine, vanilla'),
+(4,35,4,4199,18,true,'02.08.2023','диффузор orange & jasmine, vanilla'),
+(5,35,7,2100,20,true,'01.08.2023','concentrated rosemary & lemon, neroli'),
+(5,35,7,9990,0,false,'04.08.2023','concentrated black pepper & amber, neroli'),
+-- YVES SAINT LAURENT --
+(1,36,7,1490,4,false,'01.08.2023','Y EAU FRAICHE 60'),
+(1,36,7,3990,5,true,'01.08.2023','rouge pur couture'),
+(2,36,7,3790,0,false,'01.08.2023','rouge pur couture'),
+(2,36,7,3990,30,true,'03.08.2023','rouge pur couture the slim'),
+(2,36,7,3190,11,true,'03.08.2023','couture highlighter'),
+(4,36,7,2190,1,true,'03.08.2023','Y EAU FRAICHE 60'),
+(4,36,7,4190,17,true,'02.08.2023','rouge pur couture'),
+(4,36,7,3290,18,true,'02.08.2023','couture highlighter'),
+(5,36,7,1990,0,false,'01.08.2023','Y EAU FRAICHE 60'),
+(5,36,7,3990,20,true,'04.08.2023','rouge pur couture the slim'),
+-- Периодика --
+(1,37,8,1490,44,true,'01.08.2023','Фотокнига в мягкой фотообложке'),
+(1,37,8,3990,55,true,'01.08.2023','Коллекционная фотокнига в голубом переплете'),
+(2,37,8,1790,0,false,'01.08.2023','Минибук'),
+(4,37,8,2190,1,true,'03.08.2023','Вертикальная фотокнига в мягкой фотообложке'),
+(4,37,8,1190,17,true,'02.08.2023','Минибук'),
+(4,37,8,3290,18,true,'02.08.2023','Коллекционная фотокнига в голубом переплете'),
+(5,37,8,1990,0,false,'01.08.2023','Вертикальная фотокнига в мягкой фотообложке'),
+(6,37,8,990,20,true,'04.08.2023','Минибук'),
+
+(2,38,1,199,354,true,'29.08.2023','Классические. Сметана и лук'),
+(2,38,1,199,218,true,'29.08.2023','Рифлёные. Лобстер'),
+(2,38,1,199,235,true,'29.08.2023','Из печи. Лисички в сметане'),
+(3,38,1,199,265,true,'29.08.2023','Классические. Сметана и лук'),
+(3,38,1,199,357,true,'29.08.2023','Рифлёные. Лобстер'),
+(3,38,1,199,155,true,'29.08.2023','Из печи. Лисички в сметане'),
+(6,38,1,199,183,true,'29.08.2023','Классические. Сметана и лук'),
+(6,38,1,199,315,true,'29.08.2023','Рифлёные. Лобстер'),
+(6,38,1,199,848,true,'29.08.2023','Из печи. Лисички в сметане');
+
+INSERT INTO [order] (buyer_id, date, status) VALUES
+(1,'31.08.2023','выполнен'),
+(2,'09.09.2023','отменен'),
+(1,'27.09.2023','выполнен'),
+(4,'30.11.2023','выполнен'),
+(5,'15.01.2024','отменен'),
+(3,'05.02.2024','в процессе'),
+(2,'05.02.2024','в процессе');
+
+INSERT INTO [order_product] (quantity, order_id, product_id)
+VALUES (1,1,31);
+INSERT INTO [order_product] (quantity, order_id, product_id)
+VALUES (2,1,74);
+INSERT INTO [order_product] (quantity, order_id, product_id)
+VALUES (1,1,62);
+INSERT INTO [order_product] (quantity, order_id, product_id)
+VALUES (1,1,174);
+INSERT INTO [order_product] (quantity, order_id, product_id)
+VALUES (3,2,84);
+INSERT INTO [order_product] (quantity, order_id, product_id)
+VALUES (1,2,254);
+INSERT INTO [order_product] (quantity, order_id, product_id)
+VALUES (1,2,300);
+INSERT INTO [order_product] (quantity, order_id, product_id)
+VALUES (2,2,99);
+INSERT INTO [order_product] (quantity, order_id, product_id)
+VALUES (3,3,3);
+INSERT INTO [order_product] (quantity, order_id, product_id)
+VALUES (2,3,49);
+INSERT INTO [order_product] (quantity, order_id, product_id)
+VALUES (1,3,32);
+INSERT INTO [order_product] (quantity, order_id, product_id)
+VALUES (1,3,125);
+INSERT INTO [order_product] (quantity, order_id, product_id)
+VALUES (1,3,237);
+INSERT INTO [order_product] (quantity, order_id, product_id)
+VALUES (1,3,291);
+INSERT INTO [order_product] (quantity, order_id, product_id)
+VALUES (1,4,111);
+INSERT INTO [order_product] (quantity, order_id, product_id)
+VALUES (3,4,140);
+INSERT INTO [order_product] (quantity, order_id, product_id)
+VALUES (2,5,205);
+INSERT INTO [order_product] (quantity, order_id, product_id)
+VALUES (5,5,107);
+INSERT INTO [order_product] (quantity, order_id, product_id)
+VALUES (1,5,156);
+INSERT INTO [order_product] (quantity, order_id, product_id)
+VALUES (1,5,130);
+INSERT INTO [order_product] (quantity, order_id, product_id)
+VALUES (1,6,33);
+INSERT INTO [order_product] (quantity, order_id, product_id)
+VALUES (2,6,149);
+INSERT INTO [order_product] (quantity, order_id, product_id)
+VALUES (3,6,302);
+INSERT INTO [order_product] (quantity, order_id, product_id)
+VALUES (1,6,225);
+INSERT INTO [order_product] (quantity, order_id, product_id)
+VALUES (1,6,207);
+INSERT INTO [order_product] (quantity, order_id, product_id)
+VALUES (1,6,201);
+INSERT INTO [order_product] (quantity, order_id, product_id)
+VALUES (1,7,151);
+INSERT INTO [order_product] (quantity, order_id, product_id)
+VALUES (2,7,180);
+INSERT INTO [order_product] (quantity, order_id, product_id)
+VALUES (1,7,263);
+INSERT INTO [order_product] (quantity, order_id, product_id)
+VALUES (4,7,137);
+INSERT INTO [order_product] (quantity, order_id, product_id)
+VALUES (1,7,276);
+INSERT INTO [order_product] (quantity, order_id, product_id)
+VALUES (1,7,122);
+
